@@ -1,0 +1,294 @@
+/* ── Dashboard data grid ── */
+
+.grid-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.grid-wrapper {
+  overflow-x: auto;
+}
+
+.data-grid {
+  width: 100%;
+  min-width: 2025px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+/* ── Header ── */
+.data-grid thead {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+.data-grid thead tr:first-child th {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-4) var(--space-4);
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.data-grid thead tr:nth-child(2) th {
+  background: hsl(220, 16%, 14%);
+  border-bottom: 2px solid var(--accent-gold-dim);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.8rem;
+  font-weight: var(--weight-medium);
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.col-header-highlight {
+  color: var(--accent-gold) !important;
+}
+
+/* ── Body ── */
+.data-grid tbody tr {
+  transition: background var(--duration-fast);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.data-grid tbody tr:hover {
+  background: var(--bg-elevated);
+}
+
+.data-grid tbody tr.row-group-start {
+  border-top: 1px solid var(--border-medium);
+}
+
+.data-grid td {
+  padding: var(--space-3) var(--space-4);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.data-grid td.cell-model {
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  position: sticky;
+  left: 0;
+  background: inherit;
+  z-index: 1;
+}
+
+.data-grid td.cell-wheelline {
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+}
+
+.data-grid td.cell-number {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.data-grid td.cell-pieces {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.data-grid td.cell-trolleys {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.data-grid td.cell-required {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  color: var(--accent-gold);
+  background: var(--accent-gold-glow);
+}
+
+.data-grid td.cell-gap {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+}
+
+.data-grid td.cell-gap.positive {
+  color: var(--status-positive);
+  background: var(--status-positive-bg);
+}
+
+.data-grid td.cell-gap.negative {
+  color: var(--status-negative);
+  background: var(--status-negative-bg);
+}
+
+.data-grid td.cell-gap.neutral {
+  color: var(--text-tertiary);
+}
+
+.data-grid td.cell-remarks {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-grid td.cell-editable {
+  position: relative;
+}
+
+.data-grid td.cell-editable::after {
+  content: '✎';
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  font-size: 9px;
+  color: var(--text-tertiary);
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.data-grid tr:hover td.cell-editable::after {
+  opacity: 0.6;
+}
+
+/* ── Stage columns ── */
+.stage-col {
+  border-left: 1px solid var(--border-subtle);
+}
+
+.stage-col-last {
+  border-right: 1px solid var(--border-subtle);
+}
+
+/* ── Footer totals ── */
+.data-grid tfoot tr {
+  background: var(--bg-elevated);
+  border-top: 2px solid var(--accent-gold-dim);
+}
+
+.data-grid tfoot td {
+  padding: var(--space-3) var(--space-3);
+  font-weight: var(--weight-bold);
+  font-family: var(--font-mono);
+  text-align: right;
+}
+
+.data-grid tfoot td.footer-label {
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: var(--text-xs);
+  color: var(--accent-gold);
+  text-align: left;
+}
+
+.data-grid tfoot td.footer-required {
+  color: var(--accent-gold);
+  font-size: var(--text-md);
+  background: var(--accent-gold-glow);
+}
+
+.data-grid tfoot td.footer-gap.positive {
+  color: var(--status-positive);
+}
+
+.data-grid tfoot td.footer-gap.negative {
+  color: var(--status-negative);
+}
+
+/* ── Inline editable input in grid ── */
+.grid-input {
+  width: 70px;
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  text-align: right;
+  transition: all var(--duration-fast);
+}
+
+.grid-input:hover {
+  background: var(--bg-input);
+  border-color: var(--border-subtle);
+}
+
+.grid-input:focus {
+  outline: none;
+  background: var(--bg-input);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px var(--accent-gold-glow);
+}
+
+.grid-input-remarks {
+  width: 120px;
+  text-align: left;
+  font-family: var(--font-ui);
+}
+
+/* ── Print grid overrides ── */
+@media print {
+  .grid-container {
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+  .data-grid thead tr:first-child th {
+    background: #f5f5f5;
+    color: #333;
+    border-bottom: 2px solid #333;
+  }
+  .data-grid tbody tr {
+    border-bottom: 1px solid #ddd;
+  }
+  .data-grid td {
+    color: #111;
+  }
+  .data-grid td.cell-required {
+    background: #fff8e1;
+    color: #b8860b;
+  }
+  .data-grid td.cell-gap.positive {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  .data-grid td.cell-gap.negative {
+    background: #ffebee;
+    color: #c62828;
+  }
+  .data-grid tfoot tr {
+    background: #f5f5f5;
+    border-top: 2px solid #333;
+  }
+  .grid-input {
+    border: none;
+    padding: 0;
+  }
+}
+
+/* Discontinued models style */
+.row-discontinued td {
+  opacity: 0.55;
+}
+.row-discontinued input,
+.row-discontinued select,
+.row-discontinued textarea {
+  color: var(--text-tertiary) !important;
+}
+

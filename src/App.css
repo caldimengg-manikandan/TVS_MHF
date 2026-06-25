@@ -1,0 +1,180 @@
+@import './styles/global.css';
+@import './styles/grid.css';
+@import './styles/components.css';
+@import './styles/animations.css';
+
+/* ── App layout ── */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  backdrop-filter: blur(12px);
+  background: hsla(220, 18%, 12%, 0.92);
+}
+
+.app-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.app-logo__mark {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--accent-gold);
+  background: hsla(42, 95%, 55%, 0.1);
+  border: 1px solid var(--accent-gold-dim);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.app-logo__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.app-subtitle {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  letter-spacing: 0.02em;
+}
+
+/* ── Nav buttons ── */
+.app-header__nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.nav-btn--accent {
+  border-color: var(--accent-gold-dim);
+  color: var(--accent-gold);
+}
+
+.nav-btn--accent:hover {
+  background: hsla(42, 95%, 55%, 0.1);
+  border-color: var(--accent-gold);
+  box-shadow: var(--shadow-glow);
+}
+
+.nav-btn__icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.nav-btn__label {
+  line-height: 1;
+}
+
+/* ── Main ── */
+.app-main {
+  flex: 1;
+  padding: var(--space-6);
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ── Footer ── */
+.app-footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
+}
+
+/* ── Print-specific ── */
+.print-only {
+  display: none !important;
+}
+
+@media print {
+  .app-header {
+    display: none;
+  }
+  .app-footer {
+    display: none;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-header {
+    text-align: center;
+    margin-bottom: 16pt;
+  }
+  .print-header h1 {
+    font-size: 16pt;
+    color: #111;
+  }
+  .print-header p {
+    font-size: 9pt;
+    color: #666;
+  }
+  .app-main {
+    padding: 0;
+    max-width: 100%;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+  .app-main {
+    padding: var(--space-3);
+  }
+  .nav-btn__label {
+    display: none;
+  }
+}
