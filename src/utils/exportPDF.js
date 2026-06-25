@@ -33,7 +33,7 @@ export function exportPDF(calculatedRows, totals, params) {
   const headers = [
     [
       'Model',
-      'Wheel Line',
+      'Part Name',
       'Vol/Day',
       'Vol/Hr',
       `Sup(${params.supplierHours}h)\nPcs`,

@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx';
 export function exportExcel(calculatedRows, totals, params) {
   const headers = [
     'Model',
-    'Wheel Line',
+    'Part Name',
     'Vol/Day',
     'Vol/Hr',
     `Supplier (${params.supplierHours}h) Pcs`,

@@ -92,7 +92,7 @@ export default function FilterBar({
 
       {showWheelLine && (
         <div className="filter-group">
-          <label className="filter-label">Wheel Line</label>
+          <label className="filter-label">Part Name</label>
           <select
             value={filters.wheelLine || 'all'}
             onChange={(e) => handleChange('wheelLine', e.target.value)}

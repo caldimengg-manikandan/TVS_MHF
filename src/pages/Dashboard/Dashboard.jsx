@@ -213,7 +213,7 @@ export default function Dashboard() {
                 <thead>
                   <tr>
                     <th rowSpan="2" className="text-left">Model</th>
-                    <th rowSpan="2" className="text-left">Wheel Line</th>
+                    <th rowSpan="2" className="text-left">Part Name</th>
                     <th rowSpan="2" className="text-left">Part Number</th>
                     <th rowSpan="2" className="text-right">Qty</th>
                     <th rowSpan="2" className="text-right">Vol/Day</th>

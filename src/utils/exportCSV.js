@@ -4,7 +4,7 @@
 export function exportCSV(calculatedRows, totals, params) {
   const headers = [
     'Model',
-    'Wheel Line',
+    'Part Name',
     'Vol/Day',
     'Vol/Hr',
     `Supplier (${params.supplierHours}h) Pcs`,

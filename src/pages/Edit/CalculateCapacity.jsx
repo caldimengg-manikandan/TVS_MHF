@@ -218,7 +218,7 @@ export default function CalculateCapacity() {
                 <thead>
                   <tr>
                     <th rowSpan="2" className="text-left">Model</th>
-                    <th rowSpan="2" className="text-left">Wheel Line</th>
+                    <th rowSpan="2" className="text-left">Part Name</th>
                     <th rowSpan="2" className="text-left">Part Number</th>
                     <th rowSpan="2" className="text-right">Qty</th>
                     <th rowSpan="2" className="text-right">Vol/Day</th>
@@ -284,7 +284,7 @@ export default function CalculateCapacity() {
                           />
                         </td>
 
-                        {/* Wheel Line Dropdown */}
+                        {/* Part Name Dropdown */}
                         <td className="cell-wheelline edit-cell">
                           <select
                             value={row.wheelLine}
@@ -494,9 +494,9 @@ export default function CalculateCapacity() {
                 />
               </div>
 
-              {/* Wheel Line Dropdown */}
+              {/* Part Name Dropdown */}
               <div className="sidebar-field">
-                <label htmlFor="sidebar-wheelline">Wheel Line</label>
+                <label htmlFor="sidebar-wheelline">Part Name</label>
                 <select
                   id="sidebar-wheelline"
                   value={selectedRow.wheelLine}

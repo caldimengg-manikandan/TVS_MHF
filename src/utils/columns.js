@@ -4,7 +4,7 @@
  */
 export const TABLE_COLUMNS = [
   { key: 'model', name: 'Model', align: 'left', width: '180px' },
-  { key: 'wheelLine', name: 'Wheel Line', align: 'left', width: '160px' },
+  { key: 'wheelLine', name: 'Part Name', align: 'left', width: '160px' },
   { key: 'partNumber', name: 'Part Number', align: 'left', width: '150px', mono: true },
   { key: 'qtyPerVehicle', name: 'Qty', align: 'right', width: '60px', mono: true },
   { key: 'volumePerDay', name: 'Vol/Day', align: 'right', width: '90px', mono: true },
