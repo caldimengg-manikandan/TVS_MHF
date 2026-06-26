@@ -74,12 +74,12 @@ ul, ol {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent-gold);
+  outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: var(--accent-gold);
+  background: var(--primary-color);
   color: var(--text-inverse);
 }
 

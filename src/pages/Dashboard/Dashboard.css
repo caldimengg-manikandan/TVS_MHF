@@ -12,8 +12,8 @@
 
 .dashboard-content {
   flex: 1;
-  height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0 0 var(--space-6) 0; /* padding handled inside or by children */
   box-sizing: border-box;
   display: flex;

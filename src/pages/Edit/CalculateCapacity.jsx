@@ -179,7 +179,10 @@ export default function CalculateCapacity() {
         {/* Unsaved changes banner */}
         {hasUnsavedChanges && (
           <div className="unsaved-banner no-print">
-            <span className="unsaved-banner__text">⚠️ You have unsaved changes. These will be lost if you refresh or log out.</span>
+            <span className="unsaved-banner__text" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              You have unsaved changes. These will be lost if you refresh or log out.
+            </span>
             <div className="unsaved-banner__actions">
               <button className="btn btn-secondary btn-sm" onClick={discardChanges}>Discard</button>
               <button className="btn btn--accent btn-sm" onClick={save}>Save Changes</button>
@@ -188,10 +191,16 @@ export default function CalculateCapacity() {
         )}
 
         <div className="calc-sub-bar no-print">
-          <span className="sub-bar__info">✏️ Edit cells inline or use sidebar editor · {filteredRows.length === calculatedRows.length ? `${calculatedRows.length} lines active` : `${filteredRows.length} of ${calculatedRows.length} lines visible`}</span>
-          <button className="btn btn--accent" onClick={() => setShowAddModal(true)} id="btn-add-model">
-            ➕ Add New Model
-          </button>
+          <span className="sub-bar__info" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            Edit cells inline or use sidebar editor · {filteredRows.length === calculatedRows.length ? `${calculatedRows.length} lines active` : `${filteredRows.length} of ${calculatedRows.length} lines visible`}
+          </span>
+          <div className="action-bar__buttons">
+            <button className="btn btn-secondary" onClick={() => setShowAddModal(true)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Add New Model
+            </button>
+          </div>
         </div>
 
         <FilterBar
@@ -402,21 +411,21 @@ export default function CalculateCapacity() {
                             onClick={() => setSelectedRowId(row.id)}
                             title="Open Sidebar Editor"
                           >
-                            ✏️
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                           </button>
                           <button
                             className="btn-action-ghost"
                             onClick={() => duplicateModel(row.model)}
                             title="Duplicate Model"
                           >
-                            📋
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                           </button>
                           <button
                             className="btn-action-ghost text-danger"
                             onClick={() => deleteRow(row.id)}
                             title="Delete Row"
                           >
-                            🗑️
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                           </button>
                         </td>
                       </tr>
@@ -686,7 +695,10 @@ export default function CalculateCapacity() {
         <div className="modal-backdrop" onClick={() => setShowAddModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 className="modal-title">➕ Add New Model</h2>
+              <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add New Model
+              </h2>
               <button className="modal-close" onClick={() => setShowAddModal(false)}>✕</button>
             </div>
 

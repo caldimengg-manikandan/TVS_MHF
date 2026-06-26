@@ -17,7 +17,7 @@ export default function EditParameters() {
       min: 1,
       max: 24,
       step: 1,
-      icon: '⏱️',
+      icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>,
       description: 'Total working hours per day. Vol/Hr = Vol/Day ÷ this value.',
     },
     {
@@ -27,7 +27,7 @@ export default function EditParameters() {
       min: 1,
       max: 100,
       step: 1,
-      icon: '🛒',
+      icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>,
       description: 'Max wheels per trolley. Stage Trolleys = ⌈Pieces ÷ Capacity⌉.',
     },
     {
@@ -47,7 +47,7 @@ export default function EditParameters() {
       min: 0,
       max: 24,
       step: 0.5,
-      icon: '🚚',
+      icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>,
       description: 'Transit time (fwd path). standard value is 1.5h.',
     },
     {
@@ -102,7 +102,10 @@ export default function EditParameters() {
         {/* Unsaved changes banner */}
         {hasUnsavedChanges && (
           <div className="unsaved-banner no-print">
-            <span className="unsaved-banner__text">⚠️ You have unsaved changes. These will be lost if you refresh or log out.</span>
+            <span className="unsaved-banner__text" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              You have unsaved changes. These will be lost if you refresh or log out.
+            </span>
             <div className="unsaved-banner__actions">
               <button className="btn btn-secondary btn-sm" onClick={discardChanges}>Discard</button>
               <button className="btn btn--accent btn-sm" onClick={save}>Save Changes</button>
@@ -111,7 +114,10 @@ export default function EditParameters() {
         )}
 
         <div className="params-sub-bar no-print">
-          <span className="sub-bar__info">⏱️ Fine-tune timing segments for all assembly lines</span>
+          <span className="sub-bar__info" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Fine-tune timing segments for all assembly lines
+          </span>
           <div className="action-bar__buttons">
             {showConfirm ? (
               <div className="reset-confirm-box">
@@ -134,7 +140,10 @@ export default function EditParameters() {
 
         <div className="parameters-info-card">
           <p>
-            ℹ️ <strong>How parameters affect calculations:</strong> Any modifications below instantly update the required number of trolleys. 
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <strong>How parameters affect calculations:</strong> Any modifications below instantly update the required number of trolleys. 
+            </div>
             For example, reducing the <strong>Working Hours/Day</strong> increases the pieces required per hour, potentially raising trolley counts.
           </p>
         </div>

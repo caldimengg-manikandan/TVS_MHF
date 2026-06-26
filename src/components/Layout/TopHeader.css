@@ -20,17 +20,12 @@
   gap: 2px;
 }
 
-.top-header__title {
-  font-size: var(--text-md);
-  font-weight: var(--weight-bold);
-  color: var(--text-primary);
-  margin: 0;
-  line-height: 1.2;
-}
-
-.top-header__subtitle {
-  font-size: var(--text-xs);
-  color: var(--text-tertiary);
+.top-header__breadcrumb {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin: 0;
 }
 
@@ -121,9 +116,14 @@
   }
 }
 
-.top-header__theme-btn {
+.top-header__plant-selector {
+  display: flex;
+  align-items: center;
+}
+
+.top-header__icon-btn {
   padding: 8px;
-  aspect-ratio: 1;
+  font-size: 1rem;
 }
 
 /* User Capsule */

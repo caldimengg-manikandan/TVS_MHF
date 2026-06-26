@@ -77,10 +77,6 @@
 .data-grid td.cell-model {
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
-  position: sticky;
-  left: 0;
-  background: inherit;
-  z-index: 1;
 }
 
 .data-grid td.cell-wheelline {

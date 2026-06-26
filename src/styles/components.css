@@ -1,9 +1,13 @@
 /* ── Component base styles ── */
 
-/* ── Buttons ── */
-.btn {
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-ghost {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
   font-family: var(--font-ui);
@@ -15,6 +19,7 @@
   user-select: none;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .btn::after {
@@ -31,31 +36,52 @@
 }
 
 .btn-primary {
-  background: var(--accent-gold);
-  color: var(--text-inverse);
+  background: var(--primary-color);
+  color: #ffffff;
+  border: 1px solid var(--primary-color-hover);
+  box-shadow: 0 1px 2px rgba(0, 91, 172, 0.1);
+  transform: translateY(0);
 }
 .btn-primary:hover {
-  background: hsl(42, 95%, 60%);
-  box-shadow: var(--shadow-glow);
+  background: var(--primary-color-hover);
+  box-shadow: var(--shadow-primary);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(1px);
 }
 
 .btn-secondary {
-  background: var(--bg-elevated);
+  background: var(--bg-surface);
   color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-medium);
+  box-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.05);
+  transform: translateY(0);
 }
 .btn-secondary:hover {
   background: var(--bg-hover);
-  border-color: var(--border-medium);
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 12px hsla(0, 0%, 0%, 0.08);
+  transform: translateY(-1px);
+}
+.btn-secondary:active {
+  transform: translateY(1px);
 }
 
 .btn-danger {
-  background: hsla(0, 75%, 55%, 0.15);
-  color: var(--status-negative);
-  border: 1px solid hsla(0, 75%, 55%, 0.3);
+  background: var(--status-negative);
+  color: #ffffff;
+  border: 1px solid hsla(0, 75%, 55%, 0.8);
+  box-shadow: 0 2px 4px hsla(0, 75%, 55%, 0.2);
+  transform: translateY(0);
 }
 .btn-danger:hover {
-  background: hsla(0, 75%, 55%, 0.25);
+  background: hsl(0, 75%, 48%);
+  box-shadow: 0 4px 12px hsla(0, 75%, 55%, 0.35);
+  transform: translateY(-1px);
+}
+.btn-danger:active {
+  transform: translateY(1px);
 }
 
 .btn-ghost {
@@ -91,8 +117,8 @@
 
 .input:focus {
   outline: none;
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 0 3px var(--accent-gold-glow);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light);
 }
 
 .input::placeholder {
@@ -115,9 +141,9 @@
 }
 
 .input-inline:focus {
-  border-color: var(--accent-gold);
+  border-color: var(--primary-color);
   background: var(--bg-input);
-  box-shadow: 0 0 0 2px var(--accent-gold-glow);
+  box-shadow: 0 0 0 2px var(--primary-color-light);
 }
 
 /* ── Cards ── */
@@ -206,8 +232,8 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: hsla(220, 20%, 4%, 0.8);
-  backdrop-filter: blur(8px);
+  background: rgba(17, 24, 39, 0.5); /* #111827 with 50% opacity */
+  backdrop-filter: blur(4px);
   z-index: var(--z-modal-backdrop);
   display: flex;
   align-items: center;

@@ -78,28 +78,28 @@ export default function Dashboard() {
       label: 'Total Volume / Day',
       value: totals.totalVolumePerDay.toLocaleString(),
       unit: 'wheels',
-      icon: '⚙️',
+      icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>,
       accent: false,
     },
     {
       label: 'Trolleys Required',
       value: totals.totalRequired.toLocaleString(),
       unit: 'trolleys',
-      icon: '🛒',
+      icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>,
       accent: true,
     },
     {
       label: 'Plant Available',
       value: totals.totalPlantAvailable != null ? totals.totalPlantAvailable.toLocaleString() : '—',
       unit: totals.totalPlantAvailable != null ? 'trolleys' : 'not entered',
-      icon: '🏭',
+      icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 22h20"></path><path d="M4 22V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"></path><path d="M12 22V10a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12"></path></svg>,
       accent: false,
     },
     {
       label: 'Total Gap',
       value: totals.totalGap != null ? (totals.totalGap >= 0 ? `+${totals.totalGap}` : totals.totalGap) : '—',
       unit: totals.totalGap != null ? (totals.totalGap >= 0 ? 'surplus' : 'shortage') : '',
-      icon: totals.totalGap != null ? (totals.totalGap >= 0 ? '✓' : '⚠️') : '—',
+      icon: totals.totalGap != null ? (totals.totalGap >= 0 ? <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>) : '—',
       accent: false,
       status: totals.totalGap != null ? (totals.totalGap >= 0 ? 'positive' : 'negative') : 'neutral',
     },
@@ -107,30 +107,35 @@ export default function Dashboard() {
       label: 'Unique Models',
       value: modelCount,
       unit: 'models',
-      icon: '🏍️',
+      icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="12"></line></svg>,
       accent: false,
     },
     {
       label: 'Working Hours',
       value: params.workingHoursPerDay,
       unit: 'hrs/day',
-      icon: '⏱️',
+      icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>,
       accent: false,
     },
   ];
 
   return (
-    <div className="dashboard-page">
+    <div className="app-container">
       <Sidebar />
       
-      <main className="dashboard-content animate-fade-in">
+      <div className="main-content">
         <TopHeader 
           title="MHF Asset Management" 
           subtitle="Detailed MHF calculations by vehicle assembly line" 
         />
         
+        <main className="dashboard-content animate-fade-in">
+        
         <div className="dashboard-sub-bar no-print">
-          <span className="sub-bar__info">⚙️ Dynamic Calculations Grid · {filteredRows.length === calculatedRows.length ? `${calculatedRows.length} lines active` : `${filteredRows.length} of ${calculatedRows.length} lines visible`}</span>
+          <span className="sub-bar__info" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Dynamic Calculations Grid · {filteredRows.length === calculatedRows.length ? `${calculatedRows.length} lines active` : `${filteredRows.length} of ${calculatedRows.length} lines visible`}
+          </span>
           <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
             {isEditor && (
               <button 
@@ -146,7 +151,8 @@ export default function Dashboard() {
                 }}
                 id="btn-add-to-line"
               >
-                ➕ Add Model to Line
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add Model to Line
               </button>
             )}
             <button 
@@ -154,7 +160,8 @@ export default function Dashboard() {
               onClick={() => setShowExport(true)}
               id="dashboard-export-trigger"
             >
-              📥 Export & Print
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export & Print
             </button>
           </div>
         </div>
@@ -395,6 +402,7 @@ export default function Dashboard() {
           </span>
         </footer>
       </main>
+      </div>
 
       {/* ── Detail Panel Drawer (Drill-down) ── */}
       {selectedRow && (
@@ -477,7 +485,8 @@ export default function Dashboard() {
                     }}
                     id="btn-pause-model"
                   >
-                    ⏸️ Pause Model
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                    Pause Model
                   </button>
                   <button 
                     className="btn btn-danger w-full"
@@ -490,7 +499,8 @@ export default function Dashboard() {
                     }}
                     id="btn-remove-from-line"
                   >
-                    🗑️ Discontinue
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Discontinue
                   </button>
                 </div>
               )}
@@ -577,7 +587,8 @@ export default function Dashboard() {
                   e.preventDefault();
                   window.location.href = '/calculate-capacity';
                 }}>
-                  ✏️ Edit in Grid
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  Edit in Grid
                 </a>
               ) : (
                 <span className="viewer-role-hint">Viewing with Read-Only Access</span>
@@ -593,7 +604,10 @@ export default function Dashboard() {
         <div className="modal-backdrop" onClick={() => setShowAddToLineModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 className="modal-title">➕ Add Model to Line</h2>
+              <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add Model to Line
+              </h2>
               <button className="modal-close" onClick={() => setShowAddToLineModal(false)}>✕</button>
             </div>
 
