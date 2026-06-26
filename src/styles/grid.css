@@ -14,8 +14,8 @@
 
 .data-grid {
   width: 100%;
-  min-width: 2025px;
-  table-layout: fixed;
+  min-width: max-content;
+  table-layout: auto;
   border-collapse: collapse;
   font-size: var(--text-sm);
 }
