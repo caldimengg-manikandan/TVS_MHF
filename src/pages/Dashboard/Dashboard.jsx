@@ -1,26 +1,25 @@
 import { useState } from 'react';
-import { useStore, useCalculatedRows, useActiveTotals } from '../../state/useStore';
+import { useProductionPartsStore, useCalculatedParts, useActivePartTotals } from '../../stores/productionPartsStore';
 import { useAuthStore } from '../../state/authStore';
 import Sidebar from '../../components/Layout/Sidebar';
 import TopHeader from '../../components/Layout/TopHeader';
 import ExportPanel from '../../components/Export/ExportPanel';
 import FilterBar from '../../components/Filters/FilterBar';
+import AddProductionPartDrawer from '../../components/Forms/AddProductionPartDrawer';
 import { TABLE_COLUMNS } from '../../utils/columns';
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const { params, setRowField, addModelToLine, removeModelFromLine } = useStore();
-  const allRows = useCalculatedRows();
-  const calculatedRows = allRows;
-  const totals = useActiveTotals();
+  const { mhfParams } = useProductionPartsStore();
+  const allRows = useCalculatedParts('all');
+  const calculatedRows = allRows; // Dashboard shows all active parts
+  const totals = useActivePartTotals();
   const { user } = useAuthStore();
-  const isEditor = user?.role === 'editor';
+  const isEditor = user?.role === 'Admin' || user?.role === 'Planner' || user?.role === 'Production Engineer';
 
   const [selectedRow, setSelectedRow] = useState(null);
   const [showExport, setShowExport] = useState(false);
-  const [showAddToLineModal, setShowAddToLineModal] = useState(false);
-  const [modelNameToAdd, setModelNameToAdd] = useState('');
-  const [initialPlantAvail, setInitialPlantAvail] = useState('');
+  const [showAddPartDrawer, setShowAddPartDrawer] = useState(false);
 
   // Reusable Filter state
   const [filters, setFilters] = useState({
@@ -75,9 +74,9 @@ export default function Dashboard() {
 
   const kpis = [
     {
-      label: 'Total Volume / Day',
+      label: 'Total Daily Production',
       value: totals.totalVolumePerDay.toLocaleString(),
-      unit: 'wheels',
+      unit: 'Units',
       icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>,
       accent: false,
     },
@@ -112,7 +111,7 @@ export default function Dashboard() {
     },
     {
       label: 'Working Hours',
-      value: params.workingHoursPerDay,
+      value: 16, // Static or derived from a central configuration
       unit: 'hrs/day',
       icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>,
       accent: false,
@@ -139,20 +138,12 @@ export default function Dashboard() {
           <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
             {isEditor && (
               <button 
-                className="btn btn-secondary" 
-                onClick={() => {
-                  setShowAddToLineModal(true);
-                  if (approvedModels.length > 0) {
-                    setModelNameToAdd(approvedModels[0]);
-                  } else {
-                    setModelNameToAdd('');
-                  }
-                  setInitialPlantAvail('');
-                }}
-                id="btn-add-to-line"
+                className="btn btn-primary" 
+                onClick={() => setShowAddPartDrawer(true)}
+                id="btn-add-production-part"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Add Model to Line
+                Add Production Part
               </button>
             )}
             <button 
@@ -226,16 +217,16 @@ export default function Dashboard() {
                     <th rowSpan="2" className="text-right">Vol/Day</th>
                     <th rowSpan="2" className="text-right">Vol/Hr</th>
                     <th colSpan="2" className="stage-col text-center">
-                      Supplier ({params.supplierHours}h)
+                      Supplier Stage
                     </th>
                     <th colSpan="2" className="stage-col text-center">
-                      Transit ({params.transitHours}h)
+                      Transit Stage
                     </th>
                     <th colSpan="2" className="stage-col text-center">
-                      Opening ({params.openingHours}h)
+                      Opening Stage
                     </th>
                     <th colSpan="2" className="stage-col stage-col-last text-center">
-                      POC ({params.pocHours}h)
+                      POC Stage
                     </th>
                     <th rowSpan="2" className="text-left">Trolley Type</th>
                     <th rowSpan="2" className="text-right">Cap</th>
@@ -268,9 +259,9 @@ export default function Dashboard() {
                     prevModel = row.model;
                     return (
                       <tr
-                        key={row.id}
+                        key={row.part_id}
                         className={`clickable-row ${isGroupStart ? 'row-group-start' : ''} ${
-                          selectedRow?.id === row.id ? 'row-selected' : ''
+                          selectedRow?.part_id === row.part_id ? 'row-selected' : ''
                         } ${row.status === 'Discontinued' ? 'row-discontinued' : ''}`}
                         onClick={() => setSelectedRow(row)}
                       >
@@ -516,7 +507,7 @@ export default function Dashboard() {
                       <span className="stage-num">01</span>
                       <div>
                         <span className="stage-name">Supplier Stage</span>
-                        <span className="stage-meta">Duration: {params.supplierHours}h · Cap: {selectedRow.trolleyCapacity}</span>
+                        <span className="stage-meta">Duration: {selectedRow.supplierHours}h · Cap: {selectedRow.trolleyCapacity}</span>
                       </div>
                     </div>
                     <div className="stage-values">
@@ -531,7 +522,7 @@ export default function Dashboard() {
                       <span className="stage-num">02</span>
                       <div>
                         <span className="stage-name">Transit Stage</span>
-                        <span className="stage-meta">Duration: {params.transitHours}h · Cap: {selectedRow.trolleyCapacity}</span>
+                        <span className="stage-meta">Duration: {selectedRow.transitHours}h · Cap: {selectedRow.trolleyCapacity}</span>
                       </div>
                     </div>
                     <div className="stage-values">
@@ -546,7 +537,7 @@ export default function Dashboard() {
                       <span className="stage-num">03</span>
                       <div>
                         <span className="stage-name">Opening Stage</span>
-                        <span className="stage-meta">Duration: {params.openingHours}h · Cap: {selectedRow.trolleyCapacity}</span>
+                        <span className="stage-meta">Duration: {selectedRow.openingHours}h · Cap: {selectedRow.trolleyCapacity}</span>
                       </div>
                     </div>
                     <div className="stage-values">
@@ -561,7 +552,7 @@ export default function Dashboard() {
                       <span className="stage-num">04</span>
                       <div>
                         <span className="stage-name">POC Stage</span>
-                        <span className="stage-meta">Duration: {params.pocHours}h · Cap: {selectedRow.trolleyCapacity}</span>
+                        <span className="stage-meta">Duration: {selectedRow.pocHours}h · Cap: {selectedRow.trolleyCapacity}</span>
                       </div>
                     </div>
                     <div className="stage-values">
@@ -583,9 +574,9 @@ export default function Dashboard() {
             
             <div className="detail-drawer__footer">
               {isEditor ? (
-                <a href="/calculate-capacity" className="btn btn--accent edit-shortcut-btn" onClick={(e) => {
+                <a href="/planning/production-parts" className="btn btn--accent edit-shortcut-btn" onClick={(e) => {
                   e.preventDefault();
-                  window.location.href = '/calculate-capacity';
+                  window.location.href = '/planning/production-parts';
                 }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                   Edit in Grid
@@ -599,88 +590,8 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ── Add Model to Line Modal ── */}
-      {showAddToLineModal && (
-        <div className="modal-backdrop" onClick={() => setShowAddToLineModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Add Model to Line
-              </h2>
-              <button className="modal-close" onClick={() => setShowAddToLineModal(false)}>✕</button>
-            </div>
-
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (modelNameToAdd) {
-                  const val = initialPlantAvail.trim() === '' ? null : parseInt(initialPlantAvail, 10);
-                  if (val !== null && (isNaN(val) || val < 0)) {
-                    alert('Initial Plant Available must be a non-negative integer.');
-                    return;
-                  }
-                  addModelToLine(modelNameToAdd, val);
-                  setShowAddToLineModal(false);
-                  setModelNameToAdd('');
-                  setInitialPlantAvail('');
-                }
-              }} 
-              className="add-model-form"
-            >
-              {approvedModels.length > 0 ? (
-                <>
-                  <div className="form-group">
-                    <label htmlFor="select-model-add">Select Model to Add</label>
-                    <select
-                      id="select-model-add"
-                      value={modelNameToAdd}
-                      onChange={(e) => setModelNameToAdd(e.target.value)}
-                      className="input"
-                      required
-                    >
-                      {approvedModels.map(m => (
-                        <option key={m} value={m}>{m}</option>
-                      ))}
-                    </select>
-                    <span className="form-help">Only models with status "Approved" are listed here.</span>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="initial-plant-avail">Initial Plant Available Trolleys</label>
-                    <input
-                      id="initial-plant-avail"
-                      type="number"
-                      placeholder="e.g. 15 (Optional)"
-                      value={initialPlantAvail}
-                      onChange={(e) => setInitialPlantAvail(e.target.value)}
-                      min="0"
-                      className="input"
-                    />
-                    <span className="form-help">Enter starting physical trolley count for this model on the floor.</span>
-                  </div>
-
-                  <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowAddToLineModal(false)}>Cancel</button>
-                    <button type="submit" className="btn btn--accent">Add to Line</button>
-                  </div>
-                </>
-              ) : (
-                <div style={{ textAlign: 'center', padding: 'var(--space-4) 0' }}>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-4)' }}>
-                    No approved model definitions are available for activation.
-                  </p>
-                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>
-                    New models must be created and set to <strong>Approved</strong> status on the <a href="/calculate-capacity" style={{ color: 'var(--accent-gold)', textDecoration: 'underline' }}>Calculate Capacity</a> page first.
-                  </p>
-                  <div className="modal-footer" style={{ justifyContent: 'center', marginTop: 'var(--space-4)' }}>
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowAddToLineModal(false)}>Close</button>
-                  </div>
-                </div>
-              )}
-            </form>
-          </div>
-        </div>
+      {showAddPartDrawer && (
+        <AddProductionPartDrawer onClose={() => setShowAddPartDrawer(false)} />
       )}
 
       {/* Export Panel Modal */}

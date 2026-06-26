@@ -3,11 +3,12 @@ import ProtectedRoute from './components/Layout/ProtectedRoute';
 import Login from './pages/Login/Login';
 import AnalyticsDashboard from './pages/Dashboard/AnalyticsDashboard';
 import Dashboard from './pages/Dashboard/Dashboard';
-import CalculateCapacity from './pages/Edit/CalculateCapacity';
+import ProductionParts from './pages/Edit/ProductionParts';
 import EditParameters from './pages/Edit/EditParameters';
 
 // New Sprint 1 Pages
 import VehicleModelsMaster from './pages/Masters/VehicleModelsMaster';
+import ProductionPartsMaster from './pages/Masters/ProductionPartsMaster';
 import SupplierMaster from './pages/Masters/SupplierMaster';
 import PlantMaster from './pages/Masters/PlantMaster';
 import UserManagement from './pages/Administration/UserManagement';
@@ -130,6 +131,14 @@ export default function App() {
           }
         />
         <Route
+          path="/masters/production-parts"
+          element={
+            <ProtectedRoute allowedRoles={adminAndOps}>
+              <ProductionPartsMaster />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/masters/suppliers"
           element={
             <ProtectedRoute allowedRoles={adminAndOps}>
@@ -146,12 +155,12 @@ export default function App() {
           }
         />
 
-        {/* Calculator Routes */}
+        {/* Production Parts Route */}
         <Route
-          path="/calculate-capacity"
+          path="/planning/production-parts"
           element={
             <ProtectedRoute allowedRoles={adminAndOps}>
-              <CalculateCapacity />
+              <ProductionParts />
             </ProtectedRoute>
           }
         />

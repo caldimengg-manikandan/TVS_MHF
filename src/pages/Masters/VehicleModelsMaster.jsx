@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import Sidebar from '../../components/Layout/Sidebar';
 import TopHeader from '../../components/Layout/TopHeader';
-import { useMasterStore } from '../../state/masterStore';
+import { useProductionPartsStore } from '../../stores/productionPartsStore';
 import '../../App.css'; // basic layout
 
 export default function VehicleModelsMaster() {
-  const { vehicleModels } = useMasterStore();
+  const { vehicles } = useProductionPartsStore();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredModels = vehicleModels.filter(m => 
-    m.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    m.code.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredModels = vehicles.filter(m => 
+    m.vehicle_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    m.variant.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.vehicle_id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -22,7 +23,7 @@ export default function VehicleModelsMaster() {
           <div className="page-header">
             <div>
               <h1 className="page-title">Vehicle Models Master</h1>
-              <p className="page-subtitle">Manage all vehicle models and standard part requirements.</p>
+              <p className="page-subtitle">Manage all vehicle models and standard variants.</p>
             </div>
             <button className="btn-primary" onClick={() => alert('Add Model Modal TBD')}>+ Add Model</button>
           </div>
@@ -41,23 +42,19 @@ export default function VehicleModelsMaster() {
             <table className="data-grid">
               <thead>
                 <tr>
-                  <th className="text-left">Code</th>
+                  <th className="text-left">Vehicle ID</th>
                   <th className="text-left">Model Name</th>
-                  <th className="text-left">Category</th>
-                  <th className="text-right">Vol / Day</th>
-                  <th className="text-left">Part Name</th>
+                  <th className="text-left">Variant</th>
                   <th className="text-center">Status</th>
                   <th className="text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredModels.map((model) => (
-                  <tr key={model.id}>
-                    <td>{model.code}</td>
-                    <td className="fw-medium">{model.name}</td>
-                    <td>{model.category}</td>
-                    <td className="text-right num-cell">{model.volumePerDay}</td>
-                    <td>{model.partName}</td>
+                  <tr key={model.vehicle_id}>
+                    <td>{model.vehicle_id}</td>
+                    <td className="fw-medium">{model.vehicle_name}</td>
+                    <td>{model.variant}</td>
                     <td className="text-center">
                       <span className={`status-badge ${model.status === 'Active' ? 'status-active' : 'status-inactive'}`}>
                         {model.status}
@@ -72,7 +69,7 @@ export default function VehicleModelsMaster() {
                 ))}
                 {filteredModels.length === 0 && (
                   <tr>
-                    <td colSpan="7" className="text-center py-8 text-secondary">No models found</td>
+                    <td colSpan="5" className="text-center py-8 text-secondary">No vehicle models found</td>
                   </tr>
                 )}
               </tbody>

@@ -102,7 +102,6 @@ export default function Login() {
                 <input
                   id="email"
                   type="email"
-                  placeholder="superadmin@miscpro.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={error ? 'input-error' : ''}
@@ -125,7 +124,6 @@ export default function Login() {
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={error ? 'input-error' : ''}

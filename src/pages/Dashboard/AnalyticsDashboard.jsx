@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useStore, useCalculatedRows, useActiveTotals } from '../../state/useStore';
+import { useProductionPartsStore, useCalculatedParts, useActivePartTotals } from '../../stores/productionPartsStore';
 import { useAuthStore } from '../../state/authStore';
 import Sidebar from '../../components/Layout/Sidebar';
 import TopHeader from '../../components/Layout/TopHeader';
@@ -7,26 +7,29 @@ import ExportPanel from '../../components/Export/ExportPanel';
 import './AnalyticsDashboard.css';
 
 export default function AnalyticsDashboard() {
-  const { params } = useStore();
-  const allRows = useCalculatedRows();
+  const { mhfParams } = useProductionPartsStore();
+  const allRows = useCalculatedParts('all');
   const calculatedRows = allRows.filter((row) => row.status === 'Active');
-  const totals = useActiveTotals();
+  const totals = useActivePartTotals();
   const { user } = useAuthStore();
   const isEditor = user?.role === 'editor';
 
   const [selectedModel, setSelectedModel] = useState(null);
   const [showExport, setShowExport] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [barChartSort, setBarChartSort] = useState('req-desc');
+  const [tableSort, setTableSort] = useState('req-desc');
 
   // Group calculations by model name
   const modelStats = useMemo(() => {
     const map = new Map();
     calculatedRows.forEach((row) => {
-      if (!map.has(row.model)) {
-        map.set(row.model, {
-          name: row.model,
-          volumePerDay: row.volumePerDay,
-          qtyPerVehicle: row.qtyPerVehicle || 1,
+      if (!map.has(row.vehicle_model)) {
+        map.set(row.vehicle_model, {
+          name: row.vehicle_model,
+          volumePerDay: row.daily_volume,
+          qtyPerVehicle: 1, // We don't have qtyPerVehicle in new schema, default to 1
           totalRequired: 0,
           plantAvailable: 0,
           hasAvailable: false,
@@ -34,15 +37,15 @@ export default function AnalyticsDashboard() {
           lines: [],
         });
       }
-      const m = map.get(row.model);
+      const m = map.get(row.vehicle_model);
       m.totalRequired += row.totalRequired;
       m.lines.push(row);
-      if (row.plantAvailableTrolleys != null) {
-        m.plantAvailable += row.plantAvailableTrolleys;
+      if (row.plant_available != null) {
+        m.plantAvailable += row.plant_available;
         m.hasAvailable = true;
       }
       if (row.remarks) {
-        m.remarks.push(`${row.wheelLine.replace(' wheel Assy', '')}: ${row.remarks}`);
+        m.remarks.push(`${row.part_name}: ${row.remarks}`);
       }
     });
 
@@ -53,12 +56,45 @@ export default function AnalyticsDashboard() {
   }, [calculatedRows]);
 
   const filteredModelStats = useMemo(() => {
-    if (statusFilter === 'all') return modelStats;
-    return modelStats.filter((m) => {
-      const status = m.gap == null ? 'neutral' : m.gap >= 0 ? 'surplus' : 'shortage';
-      return status === statusFilter;
-    });
-  }, [modelStats, statusFilter]);
+    let result = modelStats;
+    if (statusFilter !== 'all') {
+      result = result.filter((m) => {
+        const status = m.gap == null ? 'neutral' : m.gap >= 0 ? 'surplus' : 'shortage';
+        return status === statusFilter;
+      });
+    }
+    if (searchTerm) {
+      result = result.filter(m => m.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+
+    return result;
+  }, [modelStats, statusFilter, searchTerm]);
+
+  // Derived sorted stats for Bar Chart
+  const barChartStats = useMemo(() => {
+    const arr = [...filteredModelStats];
+    switch (barChartSort) {
+      case 'req-desc': arr.sort((a, b) => b.totalRequired - a.totalRequired); break;
+      case 'req-asc': arr.sort((a, b) => a.totalRequired - b.totalRequired); break;
+      case 'alpha-asc': arr.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case 'alpha-desc': arr.sort((a, b) => b.name.localeCompare(a.name)); break;
+      default: break;
+    }
+    return arr;
+  }, [filteredModelStats, barChartSort]);
+
+  // Derived sorted stats for Table
+  const tableStats = useMemo(() => {
+    const arr = [...filteredModelStats];
+    switch (tableSort) {
+      case 'req-desc': arr.sort((a, b) => b.totalRequired - a.totalRequired); break;
+      case 'req-asc': arr.sort((a, b) => a.totalRequired - b.totalRequired); break;
+      case 'alpha-asc': arr.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case 'alpha-desc': arr.sort((a, b) => b.name.localeCompare(a.name)); break;
+      default: break;
+    }
+    return arr;
+  }, [filteredModelStats, tableSort]);
 
   const maxRequired = useMemo(() => {
     if (!modelStats.length) return 1;
@@ -102,12 +138,12 @@ export default function AnalyticsDashboard() {
   }, [selectedModel, modelStats]);
 
   const kpis = [
-    { label: 'TOTAL VOLUME / DAY', value: totals.totalVolumePerDay.toLocaleString(), unit: 'Wheels', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>, color: '#005BAC' },
+    { label: 'TOTAL DAILY PRODUCTION', value: totals.totalVolumePerDay.toLocaleString(), unit: 'Units', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>, color: '#005BAC' },
     { label: 'TROLLEYS REQUIRED', value: totals.totalRequired.toLocaleString(), unit: 'Trolleys', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>, color: '#0ea5e9' },
     { label: 'PLANT AVAILABLE', value: totals.totalPlantAvailable != null ? totals.totalPlantAvailable.toLocaleString() : '—', unit: 'Trolleys', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 22h20"></path><path d="M4 22V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"></path><path d="M12 22V10a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12"></path></svg>, color: '#22C55E' },
     { label: 'TOTAL GAP', value: totals.totalGap != null ? totals.totalGap : '—', unit: 'Trolleys', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>, color: '#EF4444', isDanger: (totals.totalGap || 0) < 0 },
     { label: 'UNIQUE MODELS', value: modelStats.length, unit: 'Models', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="12"></line></svg>, color: '#8b5cf6' },
-    { label: 'WORKING HOURS / DAY', value: params.workingHoursPerDay, unit: 'Hours', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>, color: '#f59e0b' },
+    { label: 'WORKING HOURS / DAY', value: 16, unit: 'Hours', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>, color: '#f59e0b' },
   ];
 
   return (
@@ -135,16 +171,62 @@ export default function AnalyticsDashboard() {
           ))}
         </div>
 
+        {/* ── Filter Bar ── */}
+        <div className="analytics-filter-bar" style={{ display: 'flex', gap: 'var(--space-4)', marginBottom: 'var(--space-6)', backgroundColor: 'var(--bg-surface)', padding: 'var(--space-4)', borderRadius: '8px', border: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div className="filter-group" style={{ flex: 1, maxWidth: '400px' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)', fontWeight: 600 }}>Search Model</label>
+            <div style={{ position: 'relative' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" strokeWidth="2" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input 
+                type="text" 
+                placeholder="Search by model name..." 
+                value={searchTerm} 
+                onChange={e => setSearchTerm(e.target.value)}
+                style={{ width: '100%', padding: '10px 12px 10px 36px', borderRadius: '6px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-body)', fontSize: '0.875rem', color: 'var(--text-primary)' }}
+              />
+            </div>
+          </div>
+          <div className="filter-group" style={{ minWidth: '200px' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)', fontWeight: 600 }}>Gap Status</label>
+            <select 
+              value={statusFilter} 
+              onChange={e => setStatusFilter(e.target.value)}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-body)', fontSize: '0.875rem', color: 'var(--text-primary)', cursor: 'pointer' }}
+            >
+              <option value="all">All Models</option>
+              <option value="surplus">Surplus (No Shortage)</option>
+              <option value="shortage">Shortage</option>
+              <option value="neutral">Unallocated</option>
+            </select>
+          </div>
+        </div>
+
         {/* ── Charts Grid ── */}
         <div className="enterprise-charts-grid">
           
           {/* Chart 1: Horizontal Bar */}
           <div className="chart-card">
-            <h3 className="chart-card__title">Trolley Requirements by Model</h3>
-            <span className="chart-card__subtitle">Front & Rear Wheel Trolley Counts</span>
-            <div className="bar-chart-container">
-              {modelStats.slice(0, 8).map((model) => {
-                const pct = (model.totalRequired / maxRequired) * 100;
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-4)' }}>
+              <div>
+                <h3 className="chart-card__title">Trolley Requirements by Model</h3>
+                <span className="chart-card__subtitle">Front & Rear Wheel Trolley Counts</span>
+              </div>
+              <select 
+                value={barChartSort} 
+                onChange={e => setBarChartSort(e.target.value)}
+                style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-body)', fontSize: '0.75rem', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              >
+                <option value="req-desc">Reqs (High to Low)</option>
+                <option value="req-asc">Reqs (Low to High)</option>
+                <option value="alpha-asc">Model (A-Z)</option>
+                <option value="alpha-desc">Model (Z-A)</option>
+              </select>
+            </div>
+            <div className="bar-chart-container" style={{ maxHeight: '280px', overflowY: 'auto', paddingRight: '8px' }}>
+              {barChartStats.length === 0 ? (
+                <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', padding: '20px 0' }}>No models match your filter.</div>
+              ) : barChartStats.map((model) => {
+                const pct = maxRequired > 0 ? (model.totalRequired / maxRequired) * 100 : 0;
                 return (
                   <div key={model.name} className="bar-chart-row">
                     <span className="bar-label">{model.name}</span>
@@ -203,9 +285,21 @@ export default function AnalyticsDashboard() {
         <div className="dashboard-bottom-grid">
           {/* Table */}
           <div className="card-elevated" style={{ padding: '0', overflow: 'hidden' }}>
-            <div style={{ padding: 'var(--space-4) var(--space-5)', borderBottom: '1px solid var(--border-subtle)' }}>
-              <h3 style={{ margin: 0, fontSize: 'var(--text-base)', fontWeight: 'var(--weight-bold)' }}>Models Portfolio Summary</h3>
-              <span className="text-secondary" style={{ fontSize: 'var(--text-xs)' }}>Aggregate view of model requirements, availability and gap status</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-4) var(--space-5)', borderBottom: '1px solid var(--border-subtle)' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 'var(--text-base)', fontWeight: 'var(--weight-bold)' }}>Models Portfolio Summary</h3>
+                <span className="text-secondary" style={{ fontSize: 'var(--text-xs)' }}>Aggregate view of model requirements, availability and gap status</span>
+              </div>
+              <select 
+                value={tableSort} 
+                onChange={e => setTableSort(e.target.value)}
+                style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-body)', fontSize: '0.75rem', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              >
+                <option value="req-desc">Reqs (High to Low)</option>
+                <option value="req-asc">Reqs (Low to High)</option>
+                <option value="alpha-asc">Model (A-Z)</option>
+                <option value="alpha-desc">Model (Z-A)</option>
+              </select>
             </div>
             <div style={{ overflowX: 'auto' }}>
               <table className="enterprise-table">
@@ -221,7 +315,7 @@ export default function AnalyticsDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredModelStats.map((model) => {
+                  {tableStats.map((model) => {
                     const status = model.gap == null ? 'neutral' : model.gap >= 0 ? 'surplus' : 'shortage';
                     return (
                       <tr key={model.name}>
