@@ -3,7 +3,7 @@ import Sidebar from '../../components/Layout/Sidebar';
 import TopHeader from '../../components/Layout/TopHeader';
 import { PlanningService } from '../../services/planningService';
 import { ReportService } from '../../services/reportService';
-import { downloadCSV } from '../../utils/exportUtils';
+import { downloadExcel } from '../../utils/exportUtils';
 import { DailyPlan } from '../../types/planning';
 import '../../App.css';
 
@@ -26,17 +26,17 @@ export default function ReportsDashboard() {
   const handleExportPlanExecution = async () => {
     if (!selectedPlanId) return;
     const data = await ReportService.getDailyPlanExecutionReport(selectedPlanId);
-    downloadCSV(data, `DailyPlanExecution_${selectedPlanId}`);
+    downloadExcel(data, `DailyPlanExecution_${selectedPlanId}`);
   };
 
   const handleExportTransfers = async () => {
     const data = await ReportService.getTransferHistoryReport();
-    downloadCSV(data, `TransferHistoryReport`);
+    downloadExcel(data, `TransferHistoryReport`);
   };
 
   const handleExportRequests = async () => {
     const data = await ReportService.getRequestHistoryReport();
-    downloadCSV(data, `RequestHistoryReport`);
+    downloadExcel(data, `RequestHistoryReport`);
   };
 
   return (

@@ -25,8 +25,8 @@ export default function Login() {
 
     setIsLoading(true);
     
-    setTimeout(() => {
-      const res = login(email, password, rememberMe);
+    try {
+      const res = await login(email, password, rememberMe);
       setIsLoading(false);
       if (res.success) {
         navigate('/dashboard');
@@ -34,7 +34,10 @@ export default function Login() {
         setError(res.error);
         setTimeout(() => setError(''), 5000); // Auto clear toast after 5s
       }
-    }, 600);
+    } catch (err) {
+      setIsLoading(false);
+      setError('An error occurred during login');
+    }
   };
 
   return (

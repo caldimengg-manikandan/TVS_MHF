@@ -1,40 +1,70 @@
-export function downloadCSV(data: any[], filename: string) {
+import ExcelJS from 'exceljs';
+
+export async function downloadExcel(data: any[], filename: string) {
   if (!data || data.length === 0) {
     alert("No data available to export.");
     return;
   }
 
-  // Get headers from first object
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Report');
+
   const headers = Object.keys(data[0]);
   
-  // Convert array of objects to CSV string
-  const csvRows = [];
-  
-  // Header row
-  csvRows.push(headers.join(','));
-  
-  // Data rows
+  // Add headers
+  const headerRow = worksheet.addRow(headers);
+  headerRow.eachCell((cell) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF107C41' } // Excel Green
+    };
+    cell.font = {
+      color: { argb: 'FFFFFFFF' },
+      bold: true
+    };
+    cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+  });
+
+  // Add data
   for (const row of data) {
-    const values = headers.map(header => {
-      const val = row[header] !== undefined && row[header] !== null ? row[header] : '';
-      // Escape quotes and commas
-      const escaped = String(val).replace(/"/g, '""');
-      return `"${escaped}"`;
+    const rowValues = headers.map(h => row[h]);
+    const addedRow = worksheet.addRow(rowValues);
+    addedRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FFDDDDDD' } },
+        left: { style: 'thin', color: { argb: 'FFDDDDDD' } },
+        bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } },
+        right: { style: 'thin', color: { argb: 'FFDDDDDD' } }
+      };
     });
-    csvRows.push(values.join(','));
   }
-  
-  const csvString = csvRows.join('\n');
-  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+
+  // Auto-fit columns
+  worksheet.columns.forEach(column => {
+    let maxLen = 10;
+    column.eachCell({ includeEmpty: true }, cell => {
+      const colLen = cell.value ? cell.value.toString().length : 10;
+      if (colLen > maxLen) {
+        maxLen = colLen;
+      }
+    });
+    column.width = maxLen + 2;
+  });
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
   
   const link = document.createElement('a');
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  link.href = url;
+  link.download = `${filename}_${new Date().toISOString().split('T')[0]}.xlsx`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }

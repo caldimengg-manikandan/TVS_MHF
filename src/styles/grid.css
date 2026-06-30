@@ -37,7 +37,7 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-secondary);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .data-grid thead tr:nth-child(2) th {
@@ -71,7 +71,7 @@
 .data-grid td {
   padding: var(--space-3) var(--space-4);
   vertical-align: middle;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .data-grid td.cell-model {

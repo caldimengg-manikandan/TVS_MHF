@@ -178,7 +178,7 @@
   border-left: 1px solid var(--border-subtle);
   font-size: var(--text-sm);
   color: var(--text-secondary);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .parameter-default-hint {

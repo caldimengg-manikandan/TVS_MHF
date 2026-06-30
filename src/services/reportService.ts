@@ -32,7 +32,7 @@ export class ReportService {
         'Shortfall': row.required - row.available > 0 ? row.required - row.available : 0,
         'Allocated to Lines': totalAllocated,
         'Unallocated Balance': row.required - totalAllocated,
-        'Gap Ticket Status': gapStatus,
+        'Status': gapStatus,
         'Gap Priority': gapPriority
       };
     });

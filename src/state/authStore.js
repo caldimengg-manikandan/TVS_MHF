@@ -1,18 +1,10 @@
 import { create } from 'zustand';
+import api from '../services/api';
 
 /**
  * Auth store — Handles authentication and role-based access control (RBAC).
- * Also acts as a mock user database for Sprint 1 User Management.
+ * Now uses the Express API for real user authentication and management.
  */
-
-const INITIAL_USERS = [
-  { id: 'u1', email: 'admin@tvs.com', password: 'admin123', role: 'Admin', name: 'System Admin', status: 'Active' },
-  { id: 'u2', email: 'planner@tvs.com', password: 'admin123', role: 'Planner', name: 'John Planner', status: 'Active' },
-  { id: 'u3', email: 'engineer@tvs.com', password: 'admin123', role: 'Production Engineer', name: 'Sarah Eng', status: 'Active' },
-  { id: 'u4', email: 'manager@tvs.com', password: 'admin123', role: 'Plant Manager', name: 'Mike Boss', status: 'Active' },
-  { id: 'u5', email: 'stores@tvs.com', password: 'admin123', role: 'Stores', name: 'Stores Desk', status: 'Active' },
-  { id: 'u6', email: 'viewer@tvs.com', password: 'admin123', role: 'Viewer', name: 'Guest Viewer', status: 'Active' },
-];
 
 function getStoredSession() {
   try {
@@ -45,21 +37,31 @@ export const useAuthStore = create((set, get) => ({
   user: stored,
   isAuthenticated: !!stored,
 
-  // Mock User Database for User Management Page
-  systemUsers: INITIAL_USERS,
+  // User Database for User Management Page
+  systemUsers: [],
 
-  login: (email, password, remember = false) => {
-    const { systemUsers } = get();
-    const found = systemUsers.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password && u.status === 'Active'
-    );
-    if (!found) {
-      return { success: false, error: 'Invalid email/password or account disabled.' };
+  fetchUsers: async () => {
+    try {
+      const res = await api.get('/users');
+      set({ systemUsers: res.data });
+    } catch (e) {
+      console.error(e);
     }
-    const user = { id: found.id, email: found.email, role: found.role, name: found.name };
-    storeSession(user, remember);
-    set({ user, isAuthenticated: true });
-    return { success: true };
+  },
+
+  login: async (email, password, remember = false) => {
+    try {
+      const res = await api.post('/users/login', { email, password });
+      if (res.data.success) {
+        const user = res.data.user;
+        storeSession(user, remember);
+        set({ user, isAuthenticated: true });
+        return { success: true };
+      }
+      return { success: false, error: 'Login failed.' };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || 'Invalid email/password or account disabled.' };
+    }
   },
 
   logout: () => {
@@ -68,15 +70,26 @@ export const useAuthStore = create((set, get) => ({
   },
 
   // User Management Actions
-  addUser: (newUser) => set((state) => ({
-    systemUsers: [...state.systemUsers, { ...newUser, id: `u${Date.now()}` }]
-  })),
-  updateUser: (id, updates) => set((state) => ({
-    systemUsers: state.systemUsers.map(u => u.id === id ? { ...u, ...updates } : u)
-  })),
-  deleteUser: (id) => set((state) => ({
-    systemUsers: state.systemUsers.filter(u => u.id !== id)
-  })),
+  addUser: async (newUser) => {
+    try {
+      const res = await api.post('/users', { ...newUser, id: `u${Date.now()}` });
+      set((state) => ({ systemUsers: [...state.systemUsers, res.data] }));
+    } catch (e) { console.error(e); }
+  },
+  
+  updateUser: async (id, updates) => {
+    try {
+      const res = await api.put(`/users/${id}`, updates);
+      set((state) => ({ systemUsers: state.systemUsers.map(u => u.id === id ? res.data : u) }));
+    } catch (e) { console.error(e); }
+  },
+  
+  deleteUser: async (id) => {
+    try {
+      await api.delete(`/users/${id}`);
+      set((state) => ({ systemUsers: state.systemUsers.filter(u => u.id !== id) }));
+    } catch (e) { console.error(e); }
+  },
 
   // RBAC Helpers
   hasRole: (rolesAllowed) => {

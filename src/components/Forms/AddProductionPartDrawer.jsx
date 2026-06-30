@@ -245,7 +245,7 @@ export default function AddProductionPartDrawer({ onClose }) {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Qty</label>
+                  <label>Qty per vehicle</label>
                   <input type="number" name="qty" value={formData.qty} onChange={handleChange} />
                 </div>
                 <div className="form-group">
@@ -270,7 +270,7 @@ export default function AddProductionPartDrawer({ onClose }) {
                   <input type="number" step="0.1" name="supplierHours" value={formData.supplierHours} onChange={handleChange} />
                 </div>
                 <div className="form-group">
-                  <label>Transit Hours</label>
+                  <label>Forward/Reverse hrs</label>
                   <input type="number" step="0.1" name="transitHours" value={formData.transitHours} onChange={handleChange} />
                 </div>
               </div>

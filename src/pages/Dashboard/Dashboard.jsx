@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [showAddPartDrawer, setShowAddPartDrawer] = useState(false);
 
   // Reusable Filter state
+  const [editingRowId, setEditingRowId] = useState(null);
   const [filters, setFilters] = useState({
     source: 'all',
     model: 'all',
@@ -66,8 +67,14 @@ export default function Dashboard() {
     return gap >= 0 ? 'positive' : 'negative';
   };
 
-  const handleFieldChange = (rowId, field, value) => {
-    setRowField(rowId, field, value);
+  const handleFieldChange = (id, field, value) => {
+    useProductionPartsStore.getState().updatePart(id, { [field]: value });
+  };
+
+  const handleDeleteRow = (id) => {
+    if (window.confirm('Are you sure you want to delete this part?')) {
+      useProductionPartsStore.getState().deletePart(id);
+    }
   };
 
   let prevModel = null;
@@ -147,6 +154,18 @@ export default function Dashboard() {
               </button>
             )}
             <button 
+              className="btn" 
+              onClick={() => {
+                import('../../utils/exportExcel').then(({ exportExcel }) => {
+                  exportExcel(calculatedRows, totals);
+                });
+              }}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#107c41', border: 'none', color: '#ffffff', fontWeight: 500 }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Download Excel
+            </button>
+            <button 
               className="btn btn--accent btn-export" 
               onClick={() => setShowExport(true)}
               id="dashboard-export-trigger"
@@ -207,6 +226,7 @@ export default function Dashboard() {
                   {TABLE_COLUMNS.filter(c => !c.isAction).map((col) => (
                     <col key={col.key} style={{ width: col.width }} />
                   ))}
+                  {isEditor && <col style={{ width: '120px' }} />}
                 </colgroup>
                 <thead>
                   <tr>
@@ -240,6 +260,7 @@ export default function Dashboard() {
                       Gap
                     </th>
                     <th rowSpan="2" className="text-left">Remarks</th>
+                    {isEditor && <th rowSpan="2" className="text-center">Action</th>}
                   </tr>
                   <tr>
                     <th className="stage-col text-right">Pcs</th>
@@ -300,7 +321,7 @@ export default function Dashboard() {
                         <td className="cell-required mono">{row.totalRequired}</td>
 
                         {/* Plant Available */}
-                        {isEditor ? (
+                        {(isEditor && editingRowId === row.part_id) ? (
                           <td className="cell-number edit-cell">
                             <input
                               type="number"
@@ -324,7 +345,7 @@ export default function Dashboard() {
                         </td>
 
                         {/* Remarks */}
-                        {isEditor ? (
+                        {(isEditor && editingRowId === row.part_id) ? (
                           <td className="cell-remarks edit-cell">
                             <input
                               type="text"
@@ -337,6 +358,26 @@ export default function Dashboard() {
                           </td>
                         ) : (
                           <td className="cell-remarks">{row.remarks || '—'}</td>
+                        )}
+                        {isEditor && (
+                          <td className="cell-actions text-center" onClick={(e) => e.stopPropagation()}>
+                            {editingRowId === row.part_id ? (
+                              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                <button className="btn btn-primary" style={{ padding: '6px', minHeight: 'unset' }} title="Save" onClick={() => setEditingRowId(null)}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </button>
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                <button className="btn" style={{ padding: '6px', minHeight: 'unset', color: 'var(--primary)' }} title="Edit" onClick={() => setEditingRowId(row.part_id)}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </button>
+                                <button className="btn" style={{ padding: '6px', minHeight: 'unset', color: 'var(--danger)' }} title="Delete" onClick={() => handleDeleteRow(row.part_id)}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                              </div>
+                            )}
+                          </td>
                         )}
                       </tr>
                     );
@@ -379,6 +420,7 @@ export default function Dashboard() {
                       }
                       return <td key={col.key}></td>;
                     })}
+                    {isEditor && <td></td>}
                   </tr>
                 </tfoot>
               </table>

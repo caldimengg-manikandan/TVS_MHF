@@ -165,7 +165,7 @@
 .capsule-subtitle {
   font-size: var(--text-xs);
   color: hsl(220, 10%, 55%);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 [data-theme="dark"] .capsule-subtitle {
@@ -181,7 +181,7 @@
   padding: 6px 12px;
   border: none;
   cursor: default;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 [data-theme="dark"] .capsule-btn {

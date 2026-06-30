@@ -15,7 +15,7 @@
   font-weight: var(--weight-medium);
   border-radius: var(--radius-md);
   transition: all var(--duration-normal) var(--ease-out);
-  white-space: nowrap;
+  white-space: normal;
   user-select: none;
   position: relative;
   overflow: hidden;
@@ -215,7 +215,7 @@
   color: var(--text-primary);
   font-size: var(--text-xs);
   border-radius: var(--radius-sm);
-  white-space: nowrap;
+  white-space: normal;
   pointer-events: none;
   opacity: 0;
   transition: all var(--duration-fast) var(--ease-out);

@@ -22,10 +22,21 @@ import RequestManagement from './pages/Operations/RequestManagement';
 import ReportsDashboard from './pages/Reports/ReportsDashboard';
 
 import './App.css';
+import { useEffect } from 'react';
+import { useProductionPartsStore } from './stores/productionPartsStore';
+import { useAuthStore } from './state/authStore';
 
 export default function App() {
   const adminAndOps = ['Admin', 'Planner', 'Production Engineer', 'editor'];
   const adminOnly = ['Admin', 'editor'];
+
+  const { fetchData } = useProductionPartsStore();
+  const { fetchUsers } = useAuthStore();
+
+  useEffect(() => {
+    fetchData();
+    fetchUsers();
+  }, [fetchData, fetchUsers]);
 
   return (
     <BrowserRouter>
