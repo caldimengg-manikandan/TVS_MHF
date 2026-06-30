@@ -4,7 +4,7 @@ const Part = require('../models/Part');
 
 router.get('/', async (req, res) => {
   try {
-    const parts = await Part.find();
+    const parts = await Part.find().sort({ _id: -1 });
     res.json(parts);
   } catch (err) {
     res.status(500).json({ message: err.message });

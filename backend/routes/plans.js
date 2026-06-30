@@ -4,7 +4,7 @@ const DailyPlan = require('../models/DailyPlan');
 
 router.get('/', async (req, res) => {
   try {
-    const plans = await DailyPlan.find();
+    const plans = await DailyPlan.find().sort({ _id: -1 });
     res.json(plans);
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -4,7 +4,7 @@ const VehicleModel = require('../models/VehicleModel');
 
 router.get('/', async (req, res) => {
   try {
-    const vehicles = await VehicleModel.find();
+    const vehicles = await VehicleModel.find().sort({ _id: -1 });
     res.json(vehicles);
   } catch (err) {
     res.status(500).json({ message: err.message });

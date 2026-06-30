@@ -4,7 +4,7 @@ const Gap = require('../models/Gap');
 
 router.get('/', async (req, res) => {
   try {
-    const gaps = await Gap.find();
+    const gaps = await Gap.find().sort({ _id: -1 });
     res.json(gaps);
   } catch (err) {
     res.status(500).json({ message: err.message });

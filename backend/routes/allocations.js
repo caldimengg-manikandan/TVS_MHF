@@ -4,7 +4,7 @@ const Allocation = require('../models/Allocation');
 
 router.get('/', async (req, res) => {
   try {
-    const allocations = await Allocation.find();
+    const allocations = await Allocation.find().sort({ _id: -1 });
     res.json(allocations);
   } catch (err) {
     res.status(500).json({ message: err.message });
