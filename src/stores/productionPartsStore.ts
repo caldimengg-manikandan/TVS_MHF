@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import api from '../services/api';
+import toast from 'react-hot-toast';
 
 export const useProductionPartsStore = create((set, get) => ({
   vehicles: [],
@@ -44,17 +45,25 @@ export const useProductionPartsStore = create((set, get) => ({
       const payload = { ...part, mhf_params: params };
       const res = await api.post('/parts', payload);
       set(state => ({
-        parts: [...state.parts, res.data],
-        mhfParams: [...state.mhfParams, { part_id: part.part_id, ...params }]
+        parts: [res.data, ...state.parts],
+        mhfParams: [{ part_id: part.part_id, ...params }, ...state.mhfParams]
       }));
-    } catch(e) { console.error(e); }
+      toast.success('Part added successfully');
+    } catch(e) { 
+      console.error(e); 
+      toast.error('Failed to add part');
+    }
   },
 
   updatePart: async (id, updates) => {
     try {
       const res = await api.put(`/parts/${id}`, updates);
       set(state => ({ parts: state.parts.map(p => p.part_id === id ? { ...p, ...res.data } : p) }));
-    } catch (e) { console.error(e); }
+      toast.success('Part updated');
+    } catch (e) { 
+      console.error(e); 
+      toast.error('Failed to update part');
+    }
   },
 
   updateMhfParams: async (partId, updates) => {
@@ -64,14 +73,25 @@ export const useProductionPartsStore = create((set, get) => ({
       const updatedMhf = { ...existing, ...updates };
       await api.put(`/parts/${partId}`, { mhf_params: updatedMhf });
       set(state => ({ mhfParams: state.mhfParams.map(mp => mp.part_id === partId ? updatedMhf : mp) }));
-    } catch (e) { console.error(e); }
+      toast.success('Params updated');
+    } catch (e) { 
+      console.error(e); 
+      toast.error('Failed to update params');
+    }
   },
 
   deletePart: async (partId) => {
-    set(state => ({
-      parts: state.parts.filter(p => p.part_id !== partId),
-      mhfParams: state.mhfParams.filter(mp => mp.part_id !== partId)
-    }));
+    try {
+      await api.delete(`/parts/${partId}`);
+      set(state => ({
+        parts: state.parts.filter(p => p.part_id !== partId),
+        mhfParams: state.mhfParams.filter(mp => mp.part_id !== partId)
+      }));
+      toast.success('Part deleted');
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to delete part');
+    }
   },
 
   save: () => {},

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/Layout/ProtectedRoute';
 import Login from './pages/Login/Login';
 import AnalyticsDashboard from './pages/Dashboard/AnalyticsDashboard';
@@ -25,6 +26,11 @@ import './App.css';
 import { useEffect } from 'react';
 import { useProductionPartsStore } from './stores/productionPartsStore';
 import { useAuthStore } from './state/authStore';
+import { useAllocationStore } from './stores/allocationStore';
+import { useGapStore } from './stores/gapStore';
+import { usePlanningStore } from './stores/planningStore';
+import { useRequestStore } from './stores/requestStore';
+import { useTransferStore } from './stores/transferStore';
 
 export default function App() {
   const adminAndOps = ['Admin', 'Planner', 'Production Engineer', 'editor'];
@@ -32,14 +38,25 @@ export default function App() {
 
   const { fetchData } = useProductionPartsStore();
   const { fetchUsers } = useAuthStore();
+  const { fetchAllocations } = useAllocationStore();
+  const { fetchGaps } = useGapStore();
+  const { fetchPlans } = usePlanningStore();
+  const { fetchRequests } = useRequestStore();
+  const { fetchTransfers } = useTransferStore();
 
   useEffect(() => {
     fetchData();
     fetchUsers();
-  }, [fetchData, fetchUsers]);
+    fetchAllocations();
+    fetchGaps();
+    fetchPlans();
+    fetchRequests();
+    fetchTransfers();
+  }, [fetchData, fetchUsers, fetchAllocations, fetchGaps, fetchPlans, fetchRequests, fetchTransfers]);
 
   return (
     <BrowserRouter>
+      <Toaster position="top-center" toastOptions={{ duration: 4000, style: { background: 'hsl(220, 16%, 14%)', color: '#fff', borderRadius: '8px' } }} />
       <Routes>
         {/* Public Route */}
         <Route path="/login" element={<Login />} />
