@@ -339,7 +339,8 @@
 
 .input-with-icon input {
   width: 100%;
-  padding: var(--space-3) 2.75rem var(--space-3) 2.75rem;
+  box-sizing: border-box;
+  padding: 12px 40px 12px 40px !important;
   background: hsl(220, 15%, 96%); /* Light grey-blue input fill matching mockup */
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-md);
